@@ -1,0 +1,13 @@
+.env
+.env.*
+.git
+venv
+__pycache__
+*.pyc
+backups
+data
+models
+logs
+work
+outputs
+*.tar.gz

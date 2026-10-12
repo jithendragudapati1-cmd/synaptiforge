@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ 'Create account' if mode == 'signup' else 'Log in' }} · Synaptiforge</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+</head>
+<body class="auth-body">
+<main class="auth-layout">
+    <section class="auth-intro">
+        <div class="auth-brand"><div class="logo">S</div><strong>Synaptiforge</strong></div>
+        <p class="auth-eyebrow">YOUR MACHINE LEARNING WORKSPACE</p>
+        <h1>Train.<br><span>Recover.</span><br>Build something.</h1>
+        <p>Train models with parallel workers, resume saved checkpoints, and turn your data into predictions.</p>
+        <div class="auth-features">Parallel training · Worker recovery · Saved models</div>
+    </section>
+    <section class="auth-card">
+        <p class="auth-eyebrow">{{ 'GET STARTED' if mode == 'signup' else 'WELCOME BACK' }}</p>
+        <h2>{{ 'Create your account' if mode == 'signup' else 'Log in to Synaptiforge' }}</h2>
+        <p class="muted">{{ 'One account for training and predictions.' if mode == 'signup' else 'Your models and training history are waiting.' }}</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}<div class="auth-notice {{ category }}" role="alert">{{ message }}</div>{% endfor %}
+        {% endwith %}
+        {% if google_enabled %}
+        <a class="google-button" href="{{ url_for('auth.google_login') }}">Continue with Google</a>
+        {% else %}
+        <button type="button" class="google-button" disabled>Continue with Google</button>
+        <p class="auth-small">Google sign-in is awaiting configuration. Email sign-up is available.</p>
+        {% endif %}
+        <div class="auth-divider"><span>or use your email</span></div>
+        <form method="post" action="{{ url_for('auth.signup' if mode == 'signup' else 'auth.login') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% if mode == 'signup' %}
+            <label for="name">Name</label><input id="name" name="name" maxlength="80" autocomplete="name" value="{{ request.form.get('name', '') }}" required>
+            {% endif %}
+            <label for="email">Email address</label><input id="email" name="email" type="email" maxlength="254" autocomplete="email" value="{{ request.form.get('email', '') }}" required>
+            <label for="password">Password</label><div class="password-field"><input id="password" name="password" type="password" autocomplete="{{ 'new-password' if mode == 'signup' else 'current-password' }}" {% if mode == 'signup' %}minlength="12"{% endif %} maxlength="128" required><button type="button" class="password-toggle" data-password-toggle="password" aria-label="Show password" aria-pressed="false">👁</button></div>
+            {% if mode == 'signup' %}
+            <p class="auth-small">Use at least 12 characters.</p>
+            <label for="confirm_password">Confirm password</label><input id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+            {% endif %}
+            <button class="predict-button auth-submit" type="submit">{{ 'Create account' if mode == 'signup' else 'Log in' }}</button>
+        </form>
+        {% if mode == 'login' %}<p class="auth-switch"><a href="{{ url_for('auth.forgot_password') }}">Forgot password?</a></p>{% endif %}
+        <p class="auth-switch">{% if mode == 'signup' %}Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a>{% else %}New here? <a href="{{ url_for('auth.signup') }}">Create an account</a>{% endif %}</p>
+        <p class="auth-small auth-shared">Your training jobs, checkpoints, and saved models are private to your account.</p>
+    </section>
+</main>
+<script src="{{ url_for('static',filename='password-toggle.js') }}"></script>
+<footer class="public-links"><a href="{{ url_for('privacy_notice') }}">Privacy</a> · <a href="{{ url_for('support_page') }}">Help & support</a></footer>
+</body>
+</html>

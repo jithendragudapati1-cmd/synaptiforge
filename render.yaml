@@ -1,0 +1,41 @@
+# Review provider pricing before applying. This creates a paid service and disk.
+services:
+  - type: web
+    name: synaptiforge
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python run_production.py
+    plan: standard
+    numInstances: 1
+    healthCheckPath: /healthz
+    disk:
+      name: synaptiforge-data
+      mountPath: /var/lib/synaptiforge
+      sizeGB: 5
+    envVars:
+      - key: SYNAPTIFORGE_ENV
+        value: production
+      - key: SYNAPTIFORGE_STORAGE_DIR
+        value: /var/lib/synaptiforge
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: SECRET_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: ALLOW_DEMOS
+        value: "false"
+      - key: BACKUP_ENABLED
+        value: "true"
+      - key: BACKUP_RETENTION_DAYS
+        value: "7"

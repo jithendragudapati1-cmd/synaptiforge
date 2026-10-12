@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Account access · Synaptiforge</title>
+<link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}"><link rel="stylesheet" href="{{ url_for('static',filename='auth.css') }}">
+</head><body class="auth-body"><main class="account-action-layout"><section class="auth-card">
+<div class="auth-brand"><div class="logo">S</div><strong>Synaptiforge</strong></div>
+{% with messages=get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="auth-notice {{ category }}" role="alert">{{ message }}</div>{% endfor %}{% endwith %}
+{% if mode=='pending' %}
+<h2>Verify your email</h2><p class="muted">Check the inbox for {{ current_user.email }} and open the verification link. Verify once to access your private workspace.</p>
+<form method="post" action="{{ url_for('auth.resend_verification') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="predict-button" type="submit">Resend verification email</button></form>
+<p class="auth-small">Check Spam too. Links expire after 24 hours.</p>
+<form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="google-button" type="submit">Log out</button></form>
+{% elif mode=='verify' %}
+<h2>Confirm your email</h2><p class="muted">Click below to verify your email address.</p>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="token" value="{{ token }}"><button class="predict-button" type="submit">Verify email</button></form>
+{% elif mode=='forgot' %}
+<h2>Forgot your password?</h2><p class="muted">Enter your account email. We'll email a reset link if it has a password login. Google-only accounts should use Continue with Google.</p>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label for="email">Email address</label><input id="email" name="email" type="email" maxlength="254" autocomplete="email" required><button class="predict-button auth-submit" type="submit">Send reset link</button></form>
+{% elif mode=='requested' %}
+<h2>Check your inbox</h2><p class="muted">If a password account exists for that address, a reset email has been requested. Check Spam too. The link expires after 30 minutes.</p>
+{% elif mode=='reset' %}
+<h2>Choose a new password</h2><p class="muted">Use 12–128 characters. Your previous sessions will be signed out.</p>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="token" value="{{ token }}">
+<label for="password">New password</label><div class="password-field"><input id="password" name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password" required><button type="button" class="password-toggle" data-password-toggle="password" aria-label="Show password" aria-pressed="false">👁</button></div>
+<label for="confirm_password">Confirm new password</label><div class="password-field"><input id="confirm_password" name="confirm_password" type="password" minlength="12" maxlength="128" autocomplete="new-password" required><button type="button" class="password-toggle" data-password-toggle="confirm_password" aria-label="Show password" aria-pressed="false">👁</button></div>
+<button class="predict-button auth-submit" type="submit">Reset password</button></form>
+{% else %}
+<h2>This link is unavailable</h2><p class="muted">It may have expired, already been used, or been replaced by a newer link.</p><a class="google-button" href="{{ url_for('auth.forgot_password') }}">Request a new reset link</a>
+{% endif %}
+<p class="auth-switch"><a href="{{ url_for('auth.login') }}">Back to login</a></p>
+</section></main><script src="{{ url_for('static',filename='password-toggle.js') }}"></script><footer class="public-links"><a href="{{ url_for('privacy_notice') }}">Privacy</a> · <a href="{{ url_for('support_page') }}">Help & support</a></footer>
+</body></html>

@@ -1,0 +1,18 @@
+
+.env
+.env.*
+!.env.example
+data/auth/
+venv/
+__pycache__/
+*.pyc
+backups/
+
+.env.production
+
+# Never publish private workspaces or trained artifacts
+data/
+models/
+logs/
+
+!.env.production.example
