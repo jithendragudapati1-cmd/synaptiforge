@@ -1,8 +1,16 @@
 # Publishing Synaptiforge
 
-## Prepared, not yet publicly deployed
+## Live free demo
 
-The repository contains a Gunicorn production launcher, native-Python Render blueprint, and optional Docker/Compose configuration. No hosting account, paid service, or domain has been created. Docker is not installed in the development environment, so the container image has not yet been built here. The recommended Render path uses its native Python runtime, so it does not require a local Docker build. The Python launcher and its processes are tested separately.
+Synaptiforge is deployed at https://synaptiforge.onrender.com on Render's free Python web service. Google sign-in was verified on October 22, 2026. The app starts with `python run_production.py`, which supervises Gunicorn, training, email retry, and backup worker processes.
+
+The free deployment uses `/tmp/synaptiforge` for temporary storage, secure cookies, a generated signing key, and a support address. It has no persistent disk. Accounts, uploads, models, job queues, and checkpoints can be lost on restarts or redeploys. Encrypted backups are disabled on this temporary instance. The free service sleeps when idle and can take about a minute to wake.
+
+Hosted limits are 1,000 rows, 20 numeric input columns, and one active job across the service. Start with one training worker on the free instance. Four-worker performance and recovery have not been verified on the hosted free instance.
+
+SMTP delivery is not configured on the hosted demo. Use Google sign-in; password-account verification, password reset messages, and welcome emails cannot currently be delivered. Never commit OAuth secrets, signing keys, SMTP credentials, or private workspace files.
+
+The supplied `render.yaml` describes a separate **paid** deployment with persistent storage; it is not the configuration used by the live free service. Applying it can incur charges. The sections below explain that optional durable deployment path.
 
 ## Suggested first host
 
@@ -12,7 +20,7 @@ Render's free web services do not support persistent disks. Its default filesyst
 
 The web server, training worker, email worker, and backup worker run inside one service so they can share the same local SQLite files and volume. Do not place these on separate hosts or scale the service to multiple instances. Scaling requires a shared database, object storage, and a distributed task queue.
 
-## Before creating a public service
+## Before creating a durable public service
 
 1. Put **only source code** in the hosting source repository; `.env`, `.env.production`, `data/`, `models/`, and `backups/` are private and must be excluded.
 2. Choose the final HTTPS domain or the host-provided HTTPS subdomain.
@@ -92,4 +100,4 @@ Set `BACKUP_SECONDARY_DIR` to a dedicated cloud-synced folder or mounted externa
 
 Keep the signing/backup encryption key in a separate secure place, such as a password manager. The source package does not contain it. Losing the key makes the encrypted archives unreadable even if Drive still has them. When restoring after total local loss, configure the secondary folder and matching key so the latest deletion registry is available too. A restored workspace invalidates old sessions.
 
-Public hosting remains a separate step: hosted HTTPS, Google callback registration, SMTP delivery, and persistence after a host restart must be checked before inviting testers. No paid hosting is authorized or created by the local preparation.
+The free public demo has HTTPS and verified Google sign-in. SMTP delivery and durable storage remain unconfigured. Before inviting users to store important data, configure persistent storage and off-host backups, then test email delivery and persistence after a host restart. No paid service or persistent disk is used by the current free demo.
